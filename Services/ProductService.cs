@@ -1,4 +1,5 @@
-﻿using Zadatak1.Interfaces;
+﻿using System.Linq.Expressions;
+using Zadatak1.Interfaces;
 using Zadatak1.Models;
 using Zadatak1.ViewModels;
 
@@ -36,7 +37,7 @@ public class ProductService : IProductService
 
     public async Task<ProductFilterViewModel> ApplyFilters(ProductFilterViewModel filters)
     {
-        var products = await _productRepository.GetAllAsync();
+        var products = await _productRepository.GetAll();
 
         if (!string.IsNullOrWhiteSpace(filters.SearchTerm))
             products = products.Where(p => p.Name.Contains(filters.SearchTerm, StringComparison.OrdinalIgnoreCase));
@@ -55,4 +56,41 @@ public class ProductService : IProductService
 
         return filters;
     }
+
+
+    public async Task<IEnumerable<Product>> GetAll()
+    {
+        return await _productRepository.GetAll();
+    }
+
+    public async Task<Product?> GetById(Guid id)
+    {
+        return await _productRepository.GetById(id);
+    }
+
+    public async Task<bool> Any(Expression<Func<Product, bool>> predicate)
+    {
+        return await _productRepository.Any(predicate);
+    }
+
+    public void Update(Product product)
+    {
+        _productRepository.Update(product);
+    }
+
+    public void Delete(Product product)
+    {
+        _productRepository.Delete(product);
+    }
+
+    public async Task Add(Product product)
+    {
+        await _productRepository.Add(product);
+    }
+
+    public async Task SaveChanges()
+    {
+        await _productRepository.SaveChanges();
+    }
+
 }

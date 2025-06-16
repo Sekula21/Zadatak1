@@ -4,6 +4,6 @@ namespace Zadatak1.Interfaces
 {
     public interface IRegistrationService
     {
-        Task<(bool Success, IEnumerable<string> Errors)> RegisterAsync(RegisterViewModel model);
+        Task<(bool Success, IEnumerable<string> Errors)> Registration(RegisterViewModel model);
     }
 }

@@ -1,7 +1,7 @@
 {
   "Errors": {
     "RestrictedLogin": "You have been restricted to login!",
-    "UPNotFound": "User or product not found.",
+    "UserProductNotFound": "User or product not found.",
     "NotEnoughStock": "Not enough stock available.",
     "Unauthorized": "You are unauthorized to perform this action.",
     "UserIdMissing": "User ID not found in token.",

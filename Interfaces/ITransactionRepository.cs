@@ -4,8 +4,8 @@ namespace Zadatak1.Interfaces
 {
     public interface ITransactionRepository : IRepository<Transaction>
     {
-        Task<User?> GetUserByIdAsync(Guid id);
-        Task<Product?> GetProductByIdAsync(Guid id);
+        Task<User?> GetUserById(Guid id);
+        Task<Product?> GetProductById(Guid id);
         void UpdateProduct(Product product);
 
     }

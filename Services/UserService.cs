@@ -13,14 +13,14 @@ namespace Zadatak1.Services
             _userRepository = userRepository;
         }
 
-        public async Task<User> GetUserForEditAsync(Guid id)
+        public async Task<User> GetForEdit(Guid id)
         {
-            return await _userRepository.GetByIdAsync(id);
+            return await _userRepository.GetById(id);
         }
 
-        public async Task<bool> UpdateUserAsync(Guid id, UserEditViewModel model)
+        public async Task<bool> Update(Guid id, UserEditViewModel model)
         {
-            var user = await _userRepository.GetByIdAsync(id);
+            var user = await _userRepository.GetById(id);
             if (user == null) return false;
 
             user.UserName = model.Username;
@@ -32,22 +32,22 @@ namespace Zadatak1.Services
             user.LoginPermission = model.Flag;
 
             _userRepository.Update(user);
-            await _userRepository.SaveChangesAsync();
+            await _userRepository.SaveChanges();
             return true;
         }
 
-        public async Task<IEnumerable<User>> GetAllUsersAsync()
+        public async Task<IEnumerable<User>> GetAll()
         {
-            return await _userRepository.GetAllAsync();
+            return await _userRepository.GetAll();
         }
 
-        public async Task<bool> DeleteUserAsync(Guid id)
+        public async Task<bool> Delete(Guid id)
         {
-            var user = await _userRepository.GetByIdAsync(id);
+            var user = await _userRepository.GetById(id);
             if (user == null) return false;
 
             _userRepository.Delete(user);
-            await _userRepository.SaveChangesAsync();
+            await _userRepository.SaveChanges();
             return true;
         }
     }

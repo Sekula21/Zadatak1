@@ -8,21 +8,24 @@ using Zadatak1.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile("appResponses.json", optional: false, reloadOnChange: true);
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<ILoginService, LoginService>();
-builder.Services.AddScoped<IRegisterService, RegisterService>();
+builder.Services.AddScoped<IRegistrationService, RegistrationService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
-builder.Services.AddScoped<IProductSortingService, ProductSortingService>();
-builder.Services.AddScoped<IProductFilterService, ProductFilterService>();
+builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IUserTokenService, UserTokenService>();
+builder.Services.AddScoped<IResponseMessageService, ResponseMessageService>();
 
 builder.Services.AddScoped<TokenProvider>();
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
-builder.Services.AddScoped<ITransactionService, TransactionService>();
 
 
 builder.Services.AddDbContext<ShopContext>(options =>
