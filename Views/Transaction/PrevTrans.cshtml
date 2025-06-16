@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<Zadatak1.Models.Transaction>
 
 @{
-    ViewData["Title"] = "PrevTrans";
+    ViewData["Title"] = "PrevousTrans";
 }
 
 <h1>Prevous transactions</h1>
@@ -13,16 +13,16 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.TransID)
+                @Html.DisplayNameFor(model => model.ID)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.BuyerId)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ProdId)
+                @Html.DisplayNameFor(model => model.ProductId)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.TransDate)
+                @Html.DisplayNameFor(model => model.TransactionDate)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Amount)
@@ -38,16 +38,16 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.TransID)
+                    @Html.DisplayFor(modelItem => item.ID)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.BuyerId)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.ProdId)
+                    @Html.DisplayFor(modelItem => item.ProductId)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.TransDate)
+                    @Html.DisplayFor(modelItem => item.TransactionDate)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Amount)

@@ -8,18 +8,20 @@ namespace Zadatak1.Controllers
 {
     public class TransactionController : Controller
     {
+        private readonly IResponseMessageService _responseMessageService;
         private readonly ITransactionService _transactionService;
 
-        public TransactionController(ITransactionService transactionService)
+        public TransactionController(ITransactionService transactionService, IResponseMessageService responseMessageService)
         {
             _transactionService = transactionService;
+            _responseMessageService = responseMessageService;
         }
 
         public async Task<IActionResult> Transaction()
         {
             return View(await _transactionService.GetAllTransactionsAsync());
         }
-        public async Task<IActionResult> PrevTrans()
+        public async Task<IActionResult> PrevousTrans()
         {
             return View(await _transactionService.GetAllTransactionsAsync());
         }
@@ -30,11 +32,16 @@ namespace Zadatak1.Controllers
         {
             var result = await _transactionService.ProcessTransactionAsync(Name, amount);
 
+            var notFoundMsg = _responseMessageService.Get("Errors", "UPNotFound");
+            var stockMsg = _responseMessageService.Get("Errors", "NotEnoughStock");
+            var unauthorizedMsg = _responseMessageService.Get("Errors", "Unauthorized");
+            var userIdMsg = _responseMessageService.Get("Errors", "UserIdMissing");
+
             return result switch
             {
-                "User or product not found." => NotFound(result),
-                "Not enough stock available." => BadRequest(result),
-                "Unauthorized" or "User ID not found in token." => Unauthorized(result),
+                var r when r == notFoundMsg => NotFound(r),
+                var r when r == stockMsg => BadRequest(r),
+                var r when r == unauthorizedMsg || r == userIdMsg => Unauthorized(r),
                 _ => Ok(result)
             };
 

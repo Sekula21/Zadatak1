@@ -11,11 +11,13 @@ namespace Zadatak1.Services
     {
         private readonly ITransactionRepository _transactionRepository;
         private readonly IUserTokenService _userTokenService;
+        private readonly IResponseMessageService _responseMessageService;
 
-        public TransactionService(ITransactionRepository transactionRepository, IUserTokenService userTokenService)
+        public TransactionService(ITransactionRepository transactionRepository, IUserTokenService userTokenService, IResponseMessageService responseMessageService)
         {
             _transactionRepository = transactionRepository;
             _userTokenService = userTokenService;
+            _responseMessageService = responseMessageService;
         }
         public async Task<IEnumerable<Transaction>> GetAllTransactionsAsync()
         {
@@ -25,33 +27,36 @@ namespace Zadatak1.Services
         public async Task<string> ProcessTransactionAsync(Guid productId, int amount)
         {
             var userId = _userTokenService.GetCurrentUserId();
-            if (userId == null)
-                return "Unauthorized or invalid user.";
 
             var dbUser = await _transactionRepository.GetUserByIdAsync((Guid)userId);
             var product = await _transactionRepository.GetProductByIdAsync(productId);
 
-            if (dbUser == null || product == null)
-                return "User or product not found.";
+            var notFoundMsg = _responseMessageService.Get("Errors", "UPNotFound");
+            var notEnoughStockMsg = _responseMessageService.Get("Errors", "NotEnoughStock");
 
-            if (product.TotalAmount < amount)
-                return "Not enough stock available.";
+            if (dbUser == null || product == null)
+                return notFoundMsg;
+
+            if (product.Amount < amount)
+                return notEnoughStockMsg;
 
             var transaction = new Transaction
             {
                 Buyer = dbUser,
                 Product = product,
-                TransDate = DateTime.Now,
+                TransactionDate = DateTime.Now,
                 Amount = amount,
-                Price = product.PricePerJar * amount
+                Price = product.Price * amount
             };
 
-            product.TotalAmount -= amount;
+            product.Amount -= amount;
             await _transactionRepository.AddAsync(transaction);
             _transactionRepository.UpdateProduct(product);
             await _transactionRepository.SaveChangesAsync();
 
-            return "Purchase successful!";
+            var purchaseSuccess = _responseMessageService.Get("Success", "Purchase");
+
+            return purchaseSuccess;
         }
     }
 }

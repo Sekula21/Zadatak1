@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using Zadatak1.Interfaces;
-using Zadatak1.Models;
 
 namespace Zadatak1.Repositorys
 {

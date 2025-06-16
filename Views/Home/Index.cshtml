@@ -9,7 +9,7 @@
 
 <form asp-action="Index" method="get" class="mb-3">
     <input type="text" name="searchTerm" value="@Model.SearchTerm" placeholder="Search by name" />
-    <input type="text" name="typeOfHoney" value="@Model.TypeOfHoney" placeholder="Type of honey" />
+    <input type="text" name="typeOfHoney" value="@Model.Type" placeholder="Type of honey" />
     <input type="number" step="0.01" name="minPrice" value="@Model.MinPrice" placeholder="Min price" />
     <input type="number" step="0.01" name="maxPrice" value="@Model.MaxPrice" placeholder="Max price" />
     <button type="submit">Search</button>
@@ -22,16 +22,16 @@
                     @Html.DisplayNameFor(m => m.Products.First().Name)
                 </a></th>
             <th><a asp-action="Index" asp-route-sortOrder="@ViewData["TypeSortParam"]">
-                    @Html.DisplayNameFor(m => m.Products.First().TypeOfHoney)
+                    @Html.DisplayNameFor(m => m.Products.First().Type)
                 </a></th>
             <th>@Html.DisplayNameFor(m => m.Products.First().Producer)</th>
             <th>@Html.DisplayNameFor(m => m.Products.First().Adress)</th>
             <th>@Html.DisplayNameFor(m => m.Products.First().Color)</th>
             <th>@Html.DisplayNameFor(m => m.Products.First().Description)</th>
             <th><a asp-action="Index" asp-route-sortOrder="@ViewData["PriceSortParam"]">
-                    @Html.DisplayNameFor(m => m.Products.First().PricePerJar)
+                    @Html.DisplayNameFor(m => m.Products.First().Price)
             </a></th>
-            <th>@Html.DisplayNameFor(m => m.Products.First().TotalAmount)</th>
+            <th>@Html.DisplayNameFor(m => m.Products.First().Amount)</th>
         </tr>
     </thead>
     <tbody>
@@ -39,13 +39,13 @@
         {
             <tr>
                 <td>@product.Name</td>
-                <td>@product.TypeOfHoney</td>
+                <td>@product.Type</td>
                 <td>@product.Producer</td>
                 <td>@product.Adress</td>
                 <td>@product.Color</td>
                 <td>@product.Description</td>
-                <td>@product.PricePerJar</td>
-                <td>@product.TotalAmount</td>
+                <td>@product.Price</td>
+                <td>@product.Amount</td>
             </tr>
         }
     </tbody>

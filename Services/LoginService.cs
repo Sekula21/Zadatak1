@@ -12,12 +12,14 @@ namespace Zadatak1.Services
     {
         private readonly SignInManager<User> _signInManager;
         private readonly TokenProvider _tokenProvider;
+        private readonly IResponseMessageService _responseMessageService;
 
 
-        public LoginService(SignInManager<User> signInManager, TokenProvider tokenProvider)
+        public LoginService(SignInManager<User> signInManager, TokenProvider tokenProvider, IResponseMessageService responseMessageService)
         {
             _signInManager = signInManager;
             _tokenProvider = tokenProvider;
+            _responseMessageService = responseMessageService;
         }
 
         public async Task<(bool Success, string ErrorMessage, string Token)> LoginAsync(LoginViewModel model)
@@ -33,7 +35,9 @@ namespace Zadatak1.Services
                 return (true, null, token);
             }
 
-            return (false, "Username or password is incorrect.", null);
+            var loginError = _responseMessageService.Get("Error", "LoginError");
+
+            return (false, loginError, null);
         }
     }
 }

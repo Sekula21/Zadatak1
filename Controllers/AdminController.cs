@@ -12,25 +12,24 @@ namespace Zadatak1.Controllers
 {
     public class AdminController : Controller
     {
-        private readonly IRepository<Product> _productRepository;
-        private readonly IRepository<User> _userRepository;
+        private readonly IAdminService _adminService;
 
-        public AdminController(IRepository<Product> productRepository, IRepository<User> userRepository)
+        public AdminController(IAdminService adminService)
         {
-            _productRepository = productRepository;
-            _userRepository = userRepository;   
+            _adminService = adminService;
         }
+
         public async Task<IActionResult> Dashboard()
         {
-            var users = await _userRepository.GetAllAsync();
+            var users = await _adminService.GetAllUsersAsync();
             return View(users);
         }
 
-        
+
 
         public async Task<IActionResult> Products()
         {
-            return View(await _productRepository.GetAllAsync());
+            return View(await _adminService.GetAllProductsAsync());
         }
 
         public async Task<IActionResult> Details(Guid? id)
@@ -40,7 +39,7 @@ namespace Zadatak1.Controllers
                 return NotFound();
             }
 
-            var product = await _productRepository.GetByIdAsync(id.Value);
+            var product = await _adminService.GetByIdProductsAsync(id.Value);
             if (product == null)
             {
                 return NotFound();
@@ -60,8 +59,8 @@ namespace Zadatak1.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _productRepository.AddAsync(product);
-                await _productRepository.SaveChangesAsync();
+                await _adminService.AddProductsAsync(product);
+                await _adminService.SaveChangesProductsAsync();
                 return RedirectToAction(nameof(Products));
             }
             return View(product);
@@ -74,7 +73,7 @@ namespace Zadatak1.Controllers
                 return NotFound();
             }
 
-            var product = await _productRepository.GetByIdAsync(id.Value);
+            var product = await _adminService.GetByIdProductsAsync(id.Value);
             if (product == null)
             {
                 return NotFound();
@@ -95,8 +94,8 @@ namespace Zadatak1.Controllers
             {
                 try
                 {
-                    _productRepository.Update(product);
-                    await _productRepository.SaveChangesAsync();
+                    _adminService.UpdateProducts(product);
+                    await _adminService.SaveChangesProductsAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -121,7 +120,7 @@ namespace Zadatak1.Controllers
                 return NotFound();
             }
 
-            var product = await _productRepository.GetAllAsync();
+            var product = await _adminService.GetAllProductsAsync();
             if (product == null)
             {
                 return NotFound();
@@ -134,18 +133,18 @@ namespace Zadatak1.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var product = await _productRepository.GetByIdAsync(id);
+            var product = await _adminService.GetByIdProductsAsync(id);
             if (product != null)
             {
-                _productRepository.Delete(product);
-                await _productRepository.SaveChangesAsync();
+                _adminService.DeleteProducts(product);
+                await _adminService.SaveChangesProductsAsync();
             }
             return RedirectToAction(nameof(Products));
         }
 
         private async Task<bool> ProductExists(Guid id)
         {
-            return await _productRepository.AnyAsync(p => p.Id == id);
+            return await _adminService.AnyProductsAsync(p => p.Id == id);
         }
     }
 }
