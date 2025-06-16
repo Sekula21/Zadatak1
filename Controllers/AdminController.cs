@@ -12,16 +12,18 @@ namespace Zadatak1.Controllers
 {
     public class AdminController : Controller
     {
-        private readonly IAdminService _adminService;
+        private readonly IUserService _userService;
+        private readonly IProductService _productService;
 
-        public AdminController(IAdminService adminService)
+        public AdminController(IUserService userService, IProductService productService)
         {
-            _adminService = adminService;
+            _productService = productService;
+            _userService = userService; 
         }
 
         public async Task<IActionResult> Dashboard()
         {
-            var users = await _adminService.GetAllUsersAsync();
+            var users = await _userService.GetAll();
             return View(users);
         }
 
@@ -29,7 +31,7 @@ namespace Zadatak1.Controllers
 
         public async Task<IActionResult> Products()
         {
-            return View(await _adminService.GetAllProductsAsync());
+            return View(await _productService.GetAll());
         }
 
         public async Task<IActionResult> Details(Guid? id)
@@ -39,7 +41,7 @@ namespace Zadatak1.Controllers
                 return NotFound();
             }
 
-            var product = await _adminService.GetByIdProductsAsync(id.Value);
+            var product = await _productService.GetById(id.Value);
             if (product == null)
             {
                 return NotFound();
@@ -59,8 +61,8 @@ namespace Zadatak1.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _adminService.AddProductsAsync(product);
-                await _adminService.SaveChangesProductsAsync();
+                await _productService.Add(product);
+                await _productService.SaveChanges();
                 return RedirectToAction(nameof(Products));
             }
             return View(product);
@@ -73,7 +75,7 @@ namespace Zadatak1.Controllers
                 return NotFound();
             }
 
-            var product = await _adminService.GetByIdProductsAsync(id.Value);
+            var product = await _productService.GetById(id.Value);
             if (product == null)
             {
                 return NotFound();
@@ -94,8 +96,8 @@ namespace Zadatak1.Controllers
             {
                 try
                 {
-                    _adminService.UpdateProducts(product);
-                    await _adminService.SaveChangesProductsAsync();
+                    _productService.Update(product);
+                    await _productService.SaveChanges();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -120,7 +122,7 @@ namespace Zadatak1.Controllers
                 return NotFound();
             }
 
-            var product = await _adminService.GetAllProductsAsync();
+            var product = await _productService.GetAll();
             if (product == null)
             {
                 return NotFound();
@@ -133,18 +135,18 @@ namespace Zadatak1.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var product = await _adminService.GetByIdProductsAsync(id);
+            var product = await _productService.GetById(id);
             if (product != null)
             {
-                _adminService.DeleteProducts(product);
-                await _adminService.SaveChangesProductsAsync();
+                _productService.Delete(product);
+                await _productService.SaveChanges();
             }
             return RedirectToAction(nameof(Products));
         }
 
         private async Task<bool> ProductExists(Guid id)
         {
-            return await _adminService.AnyProductsAsync(p => p.Id == id);
+            return await _productService.Any(p => p.Id == id);
         }
     }
 }

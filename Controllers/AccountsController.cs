@@ -31,24 +31,26 @@ namespace Zadatak1.Controllers
             if (ModelState.IsValid)
             {
                 var (success, errorMessage, token) = await _loginService.LoginAsync(model);
-                if (success && model.LoginPermission == true)
-                {
-                    TempData[token] = token;
-                    if (model.Role == true)
-                    {
-                        return RedirectToAction("Dashboard", "Admin");
-                    }
-                    else if (model.Role == false)
-                    {
-                        return RedirectToAction("Products", "User");
-                    }
-                }else if(model.LoginPermission == false)
-                {
-                    var loginError = _responseMessageService.Get("Errors", "RestricedLogin");
-                    return BadRequest(loginError);
-                }
 
-                ModelState.AddModelError("", errorMessage);
+                switch (success)
+                {
+                    case true when model.LoginPermission:
+                        TempData[token] = token;
+
+                        return model.Role switch
+                        {
+                            true => RedirectToAction("Dashboard", "Admin"),
+                            false => RedirectToAction("Products", "User"),
+                        };
+
+                    case true when !model.LoginPermission:
+                        var loginError = _responseMessageService.Get("Errors", "RestricedLogin");
+                        return BadRequest(loginError);
+
+                    case false:
+                        ModelState.AddModelError("", errorMessage);
+                        break;
+                }
             }
 
             return View(model);
@@ -64,7 +66,7 @@ namespace Zadatak1.Controllers
         {
             if (ModelState.IsValid)
             {
-                var (success, errors) = await _registrationService.RegisterAsync(model);
+                var (success, errors) = await _registrationService.Registration(model);
 
                 if (success)
                 {
@@ -82,3 +84,4 @@ namespace Zadatak1.Controllers
         }
     }
 }
+

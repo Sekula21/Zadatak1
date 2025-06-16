@@ -18,14 +18,14 @@ namespace Zadatak1.Controllers
 
         public async Task<IActionResult> Products()
         {
-            return View(await _userService.GetAllUsersAsync());
+            return View(await _userService.GetAll());
         }
 
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null) return NotFound();
 
-            var user = await _userService.GetUserForEditAsync(id.Value);
+            var user = await _userService.GetForEdit(id.Value);
             if (user == null) return NotFound();
 
             return View(user);
@@ -39,7 +39,7 @@ namespace Zadatak1.Controllers
 
             if (!ModelState.IsValid) return View(model);
 
-            var success = await _userService.UpdateUserAsync(id, model);
+            var success = await _userService.Update(id, model);
             if (!success) return NotFound();
 
             return RedirectToAction("Dashboard", "Admin");
@@ -49,7 +49,7 @@ namespace Zadatak1.Controllers
         {
             if (id == null) return NotFound();
 
-            var users = await _userService.GetAllUsersAsync();
+            var users = await _userService.GetAll();
             if (users == null) return NotFound();
 
             return View(users);
@@ -59,7 +59,7 @@ namespace Zadatak1.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            await _userService.DeleteUserAsync(id);
+            await _userService.Delete(id);
             return RedirectToAction("Dashboard", "Admin");
         }
 

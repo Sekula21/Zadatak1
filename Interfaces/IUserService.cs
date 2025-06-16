@@ -5,9 +5,9 @@ namespace Zadatak1.Interfaces
 {
     public interface IUserService
     {
-        Task<User> GetUserForEditAsync(Guid id);
-        Task<bool> UpdateUserAsync(Guid id, UserEditViewModel model);
-        Task<IEnumerable<User>> GetAllUsersAsync();
-        Task<bool> DeleteUserAsync(Guid id);
+        Task<User> GetForEdit(Guid id);
+        Task<bool> Update(Guid id, UserEditViewModel model);
+        Task<IEnumerable<User>> GetAll();
+        Task<bool> Delete(Guid id);
     }
 }

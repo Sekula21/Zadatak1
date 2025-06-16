@@ -2,6 +2,6 @@
 
 public interface ITransactionService
 {
-    Task<string> ProcessTransactionAsync(Guid productId, int amount);
-    Task<IEnumerable<Transaction>> GetAllTransactionsAsync();
+    Task<ActionResult<string>> ProcessTransaction(Guid productId, int amount);
+    Task<IEnumerable<Transaction>> GetAllTransactions();
 }

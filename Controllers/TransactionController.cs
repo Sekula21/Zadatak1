@@ -3,48 +3,56 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Zadatak1.Interfaces;
 using Zadatak1.Models;
+using Zadatak1.Services;
 
 namespace Zadatak1.Controllers
 {
     public class TransactionController : Controller
     {
-        private readonly IResponseMessageService _responseMessageService;
         private readonly ITransactionService _transactionService;
+        private readonly ExceptionHandlerService _exceptionHandler;
 
-        public TransactionController(ITransactionService transactionService, IResponseMessageService responseMessageService)
+        public TransactionController(ITransactionService transactionService,
+            ExceptionHandlerService exceptionHandlerService)
         {
             _transactionService = transactionService;
-            _responseMessageService = responseMessageService;
+            _exceptionHandler = exceptionHandlerService;
         }
 
         public async Task<IActionResult> Transaction()
         {
-            return View(await _transactionService.GetAllTransactionsAsync());
+            return View(await _transactionService.GetAllTransactions());
         }
-        public async Task<IActionResult> PrevousTrans()
+        public async Task<IActionResult> PreviousTrans()
         {
-            return View(await _transactionService.GetAllTransactionsAsync());
+            return View(await _transactionService.GetAllTransactions());
         }
 
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> Transaction(Guid Name, int amount)
         {
-            var result = await _transactionService.ProcessTransactionAsync(Name, amount);
-
-            var notFoundMsg = _responseMessageService.Get("Errors", "UPNotFound");
-            var stockMsg = _responseMessageService.Get("Errors", "NotEnoughStock");
-            var unauthorizedMsg = _responseMessageService.Get("Errors", "Unauthorized");
-            var userIdMsg = _responseMessageService.Get("Errors", "UserIdMissing");
-
-            return result switch
+            try
             {
-                var r when r == notFoundMsg => NotFound(r),
-                var r when r == stockMsg => BadRequest(r),
-                var r when r == unauthorizedMsg || r == userIdMsg => Unauthorized(r),
-                _ => Ok(result)
-            };
+                var result = await _transactionService.ProcessTransaction(Name, amount);
 
+                return Ok(new
+                {
+                    ResultStatus = ActionResultStatus.Success,
+                    Data = result
+                });
+            }
+            catch (Exception ex)
+            {
+                var handledResult = _exceptionHandler.HandleException<string>(ex);
+                return handledResult.ResultStatus switch
+                {
+                    ActionResultStatus.BadRequest => BadRequest(handledResult),
+                    ActionResultStatus.Unauthorized => Unauthorized(handledResult),
+                    ActionResultStatus.NotFound => NotFound(handledResult),
+                    _ => StatusCode(500, handledResult)
+                };
+            }
         }
     }
 }

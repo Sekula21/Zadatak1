@@ -15,13 +15,13 @@ namespace Zadatak1.Repositorys
             _dbSet = context.Set<T>();
         }
 
-        public async Task<T?> GetByIdAsync(Guid id) => await _dbSet.FindAsync(id);
-        public async Task<IEnumerable<T>> GetAllAsync() => await _dbSet.ToListAsync();
-        public async Task AddAsync(T entity) => await _dbSet.AddAsync(entity);
+        public async Task<T?> GetById(Guid id) => await _dbSet.FindAsync(id);
+        public async Task<IEnumerable<T>> GetAll() => await _dbSet.ToListAsync();
+        public async Task Add(T entity) => await _dbSet.AddAsync(entity);
         public void Update(T entity) => _dbSet.Update(entity);
         public void Delete(T entity) => _dbSet.Remove(entity);
-        public async Task SaveChangesAsync() => await _context.SaveChangesAsync();
-        public async Task<bool> AnyAsync(Expression<Func<T, bool>> predicate)
+        public async Task SaveChanges() => await _context.SaveChangesAsync();
+        public async Task<bool> Any(Expression<Func<T, bool>> predicate)
         {
             return await _dbSet.AnyAsync(predicate);
         }
