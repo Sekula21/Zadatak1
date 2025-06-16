@@ -9,8 +9,8 @@ namespace WebApplication1.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IProductFilterService _productFilterService;
-        public HomeController(IProductFilterService productFilterService)
+        private readonly IProductService _productFilterService;
+        public HomeController(IProductService productFilterService)
         {
             _productFilterService = productFilterService;
         }
@@ -23,13 +23,13 @@ namespace WebApplication1.Controllers
             var filterModel = new ProductFilterViewModel
             {
                 SearchTerm = searchTerm,
-                TypeOfHoney = typeOfHoney,
+                Type = typeOfHoney,
                 MinPrice = minPrice,
                 MaxPrice = maxPrice,
                 SortOrder = sortOrder
             };
 
-            var result = await _productFilterService.ApplyFiltersAsync(filterModel);
+            var result = await _productFilterService.ApplyFilters(filterModel);
             return View(result);
         }
     }

@@ -11,7 +11,7 @@ namespace Zadatak1.ViewModels
         [DataType(DataType.Password)]
         public  string Password { get; set; }
         public bool RememberMe { get; set; }
-        public bool Purpose { get; set; }
-        public bool Flag { get; set; }
+        public bool Role { get; set; }
+        public bool LoginPermission { get; set; }
     }
 }

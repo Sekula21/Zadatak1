@@ -9,13 +9,15 @@ namespace Zadatak1.Controllers
 {
     public class AccountsController : Controller
     {
+        private readonly IResponseMessageService _responseMessageService;
         private readonly ILoginService _loginService;
-        private readonly IRegisterService _registerService;
+        private readonly IRegistrationService _registrationService;
 
-        public AccountsController(ILoginService loginService, IRegisterService registerService)
+        public AccountsController(ILoginService loginService, IRegistrationService registerService, IResponseMessageService responseMessageService)
         {
             _loginService = loginService;
-            _registerService = registerService;
+            _registrationService = registerService;
+            _responseMessageService = responseMessageService;
         }
 
         public IActionResult Login()
@@ -29,20 +31,21 @@ namespace Zadatak1.Controllers
             if (ModelState.IsValid)
             {
                 var (success, errorMessage, token) = await _loginService.LoginAsync(model);
-                if (success && model.Flag == true)
+                if (success && model.LoginPermission == true)
                 {
                     TempData[token] = token;
-                    if (model.Purpose == true)
+                    if (model.Role == true)
                     {
                         return RedirectToAction("Dashboard", "Admin");
                     }
-                    else if (model.Purpose == false)
+                    else if (model.Role == false)
                     {
                         return RedirectToAction("Products", "User");
                     }
-                }else if(model.Flag == false)
+                }else if(model.LoginPermission == false)
                 {
-                    ModelState.AddModelError("You have been restricted to login!", errorMessage);
+                    var loginError = _responseMessageService.Get("Errors", "RestricedLogin");
+                    return BadRequest(loginError);
                 }
 
                 ModelState.AddModelError("", errorMessage);
@@ -61,7 +64,7 @@ namespace Zadatak1.Controllers
         {
             if (ModelState.IsValid)
             {
-                var (success, errors) = await _registerService.RegisterAsync(model);
+                var (success, errors) = await _registrationService.RegisterAsync(model);
 
                 if (success)
                 {

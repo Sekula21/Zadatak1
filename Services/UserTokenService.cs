@@ -23,8 +23,6 @@ namespace Zadatak1.Services
             if (userIdClaim == null)
                 return null;
 
-   //         Guid userId = Guid.NewGuid();
-
             if (Guid.TryParse(userIdClaim.Value, out Guid userId))
                 return userId;
 

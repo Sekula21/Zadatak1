@@ -13,14 +13,14 @@ namespace Zadatak1.ViewModels
         [Display(Name = "New Password")]
         public string Password { get; set; }
         [Required(ErrorMessage ="Enter your name.")]
-        public string Name { get; set; }
+        public string FirstName { get; set; }
         [Required(ErrorMessage = "Enter your last name.")]
         public string LastName { get; set; }
         [Required(ErrorMessage = "Select your gender.")]
         public string Gender { get; set; }
         [Required(ErrorMessage = "Gmail is required!")]
         [EmailAddress]
-        public string Gmail { get; set; }
+        public string Email { get; set; }
         [Required(ErrorMessage = "Enter your birth date")]
         public DateTime BirthDate { get; set; }
     }

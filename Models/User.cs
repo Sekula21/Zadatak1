@@ -7,11 +7,11 @@ namespace Zadatak1.Models
 {
     public class User : IdentityUser<Guid>
     {
-        public string Name { get; set; }
+        public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Gender { get; set; }
         public DateTime BirthDate { get; set; }
-        public bool Purpose { get; set; }
-        public bool Flag { get; set; }
+        public bool Role { get; set; }
+        public bool LoginPermission { get; set; }
     }
 }

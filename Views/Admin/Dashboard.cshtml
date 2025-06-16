@@ -13,7 +13,7 @@
                 @Html.DisplayNameFor(model => model.UserName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                @Html.DisplayNameFor(model => model.FirstName)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.LastName)
@@ -28,10 +28,10 @@
                 @Html.DisplayNameFor(model => model.BirthDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Purpose)
+                @Html.DisplayNameFor(model => model.Role)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Flag)
+                @Html.DisplayNameFor(model => model.LoginPermission)
             </th>
             <th></th>
         </tr>
@@ -47,7 +47,7 @@
                     @Html.DisplayFor(modelItem => item.UserName)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Name)
+                    @Html.DisplayFor(modelItem => item.FirstName)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.LastName)
@@ -62,10 +62,10 @@
                     @Html.DisplayFor(modelItem => item.BirthDate)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Purpose)
+                    @Html.DisplayFor(modelItem => item.Role)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Flag)
+                    @Html.DisplayFor(modelItem => item.LoginPermission)
                 </td>
                 <td>
                     <a asp-action="Views_EditUser_EditUser" asp-route-id="@item.Id">Edit User</a> |

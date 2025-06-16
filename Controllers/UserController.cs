@@ -1,30 +1,67 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using Zadatak1.Interfaces;
 using Zadatak1.Models;
+using Zadatak1.Services;
+using Zadatak1.ViewModels;
 
 namespace Zadatak1.Controllers
 {
-    public class UserController : Controller
+    public class EditUsersController : Controller
     {
-        private readonly IRepository<Product> _productRepository;
+        private readonly IUserService _userService;
 
-        public UserController(IRepository<Product> productRepository)
+        public EditUsersController(IUserService userService)
         {
-            _productRepository = productRepository;
+            _userService = userService;
         }
+
         public async Task<IActionResult> Products()
         {
-            return View(await _productRepository.GetAllAsync());
+            return View(await _userService.GetAllUsersAsync());
         }
-        
+
+        public async Task<IActionResult> Edit(Guid? id)
+        {
+            if (id == null) return NotFound();
+
+            var user = await _userService.GetUserForEditAsync(id.Value);
+            if (user == null) return NotFound();
+
+            return View(user);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditUser(Guid id, UserEditViewModel model)
+        {
+            if (id != model.Id) return NotFound();
+
+            if (!ModelState.IsValid) return View(model);
+
+            var success = await _userService.UpdateUserAsync(id, model);
+            if (!success) return NotFound();
+
+            return RedirectToAction("Dashboard", "Admin");
+        }
+
+        public async Task<IActionResult> DeleteUser(Guid? id)
+        {
+            if (id == null) return NotFound();
+
+            var users = await _userService.GetAllUsersAsync();
+            if (users == null) return NotFound();
+
+            return View(users);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
+        {
+            await _userService.DeleteUserAsync(id);
+            return RedirectToAction("Dashboard", "Admin");
+        }
 
     }
-}
+} 
