@@ -7,13 +7,19 @@ using Zadatak1.ViewModels;
 
 namespace Zadatak1.Controllers
 {
-    public class EditUsersController : Controller
+    public class UsersController : Controller
     {
         private readonly IUserService _userService;
 
-        public EditUsersController(IUserService userService)
+        public UsersController(IUserService userService)
         {
             _userService = userService;
+        }
+
+        public async Task<IActionResult> Dashboard()
+        {
+            var users = await _userService.GetAll();
+            return View(users);
         }
 
         public async Task<IActionResult> Products()
@@ -25,7 +31,7 @@ namespace Zadatak1.Controllers
         {
             if (id == null) return NotFound();
 
-            var user = await _userService.GetForEdit(id.Value);
+            var user = await _userService.GetById(id.Value);
             if (user == null) return NotFound();
 
             return View(user);
@@ -40,7 +46,7 @@ namespace Zadatak1.Controllers
             if (!ModelState.IsValid) return View(model);
 
             var success = await _userService.Update(id, model);
-            if (!success) return NotFound();
+            if (success == null) return NotFound();
 
             return RedirectToAction("Dashboard", "Admin");
         }

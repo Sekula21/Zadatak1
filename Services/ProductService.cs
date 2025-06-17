@@ -1,14 +1,15 @@
 ﻿using System.Linq.Expressions;
 using Zadatak1.Interfaces;
 using Zadatak1.Models;
+using Zadatak1.Repositorys;
 using Zadatak1.ViewModels;
 
 namespace Zadatak1.Services;
 public class ProductService : IProductService
 {
-    private readonly IRepository<Product> _productRepository;
+    private readonly IProductRepository _productRepository;
 
-    public ProductService(IRepository<Product> productRepository)
+    public ProductService(IProductRepository productRepository)
     {
         _productRepository = productRepository;
     }
@@ -52,7 +53,8 @@ public class ProductService : IProductService
             products = products.Where(p => p.Price <= filters.MaxPrice.Value);
 
         products = Sort(products, filters.SortOrder);
-        filters.Products = products;
+
+        filters.Products = (IEnumerable<ProductEditViewModel>)products;
 
         return filters;
     }
@@ -73,24 +75,29 @@ public class ProductService : IProductService
         return await _productRepository.Any(predicate);
     }
 
-    public void Update(Product product)
+    public async Task<bool> Create(Product model)
     {
-        _productRepository.Update(product);
+        return await _productRepository.Create(model);
     }
 
-    public void Delete(Product product)
+    public async Task<Product?> GetForEdit(Guid id)
     {
-        _productRepository.Delete(product);
+        return await _productRepository.GetForEdit(id);
     }
 
-    public async Task Add(Product product)
+    public async Task<bool> Update(Guid id, Product updatedProduct)
     {
-        await _productRepository.Add(product);
+        return await _productRepository.Update(id, updatedProduct);
     }
 
-    public async Task SaveChanges()
+    public async Task<bool> Delete(Guid id)
     {
-        await _productRepository.SaveChanges();
+        return await _productRepository.Delete(id);
+    }
+
+    public async Task<bool> ProductExists(Guid id)
+    {
+        return await _productRepository.Any(p => p.Id == id);
     }
 
 }

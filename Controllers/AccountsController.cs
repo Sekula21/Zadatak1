@@ -66,7 +66,7 @@ namespace Zadatak1.Controllers
         {
             if (ModelState.IsValid)
             {
-                var (success, errors) = await _registrationService.Registration(model);
+                var (success, errors) = await _registrationService.Register(model);
 
                 if (success)
                 {

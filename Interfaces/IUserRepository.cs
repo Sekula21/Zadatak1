@@ -3,11 +3,11 @@ using Zadatak1.ViewModels;
 
 namespace Zadatak1.Interfaces
 {
-    public interface IUserService
+    public interface IUserRepository : IRepository<User>
     {
         Task<User> GetById(Guid id);
-        Task<string> Update(Guid id, UserEditViewModel model);
+        Task<bool> Update(Guid id, UserEditViewModel model);
         Task<IEnumerable<User>> GetAll();
-        Task<string> Delete(Guid id);
+        Task<bool> Delete(Guid id);
     }
 }

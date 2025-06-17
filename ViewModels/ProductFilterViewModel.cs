@@ -10,6 +10,6 @@ namespace Zadatak1.ViewModels
         public float? MaxPrice { get; set; }
         public string SortOrder { get; set; }
 
-        public IEnumerable<Product> Products { get; set; }
+        public IEnumerable<ProductEditViewModel> Products { get; set; }
     }
 }
