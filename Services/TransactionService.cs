@@ -10,20 +10,24 @@ namespace Zadatak1.Services
 
     public class TransactionService : ITransactionService
     {
+        private readonly IUserRepository _userRepository;
+        private readonly IProductRepository _productRepository;
         private readonly ITransactionRepository _transactionRepository;
         private readonly IUserTokenService _userTokenService;
         private readonly IResponseMessageService _responseMessageService;
-        private readonly ExceptionHandlerService _exceptionHandler;
+        private readonly ExceptionHandler _exceptionHandler;
 
-        public TransactionService(ITransactionRepository transactionRepository, IUserTokenService userTokenService, 
-            IResponseMessageService responseMessageService, ExceptionHandlerService exceptionHandlerService)
+        public TransactionService(IUserRepository userRepository, IProductRepository productRepository, IUserTokenService userTokenService, 
+            IResponseMessageService responseMessageService, ExceptionHandler exceptionHandler, ITransactionRepository transactionRepository)
         {
-            _transactionRepository = transactionRepository;
+            _userRepository = userRepository;
+            _productRepository = productRepository;
             _userTokenService = userTokenService;
             _responseMessageService = responseMessageService;
-            _exceptionHandler = exceptionHandlerService;
+            _exceptionHandler = exceptionHandler;
+            _transactionRepository = transactionRepository;
         }
-        public async Task<IEnumerable<Transaction>> GetAllTransactions()
+        public async Task<IEnumerable<Transaction>> GetAll()
         {
             return await _transactionRepository.GetAll();
         }
@@ -33,8 +37,8 @@ namespace Zadatak1.Services
             {
                 var userId = _userTokenService.GetCurrentUserId();
 
-                var dbUser = await _transactionRepository.GetUserById((Guid)userId);
-                var product = await _transactionRepository.GetProductById(productId);
+                var dbUser = await _userRepository.GetById((Guid)userId);
+                var product = await _productRepository.GetById(productId);
                 var notFoundMsg = _responseMessageService.Get("Errors", "UPNotFound");
                 var notEnoughStockMsg = _responseMessageService.Get("Errors", "NotEnoughStock");
 
@@ -67,7 +71,7 @@ namespace Zadatak1.Services
 
                 product.Amount -= amount;
                 await _transactionRepository.Add(transaction);
-                _transactionRepository.UpdateProduct(product);
+                _productRepository.Update(product);
                 await _transactionRepository.SaveChanges();
 
                 var successMsg = _responseMessageService.Get("Success", "Purchase");

@@ -3,5 +3,5 @@
 public interface ITransactionService
 {
     Task<ActionResult<string>> ProcessTransaction(Guid productId, int amount);
-    Task<IEnumerable<Transaction>> GetAllTransactions();
+    Task<IEnumerable<Transaction>> GetAll();
 }

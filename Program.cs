@@ -26,6 +26,9 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+
 
 
 builder.Services.AddDbContext<ShopContext>(options =>

@@ -1,39 +1,31 @@
 ﻿using Zadatak1.Interfaces;
 using Zadatak1.Models;
+using Zadatak1.Repositorys;
 using Zadatak1.ViewModels;
 
 namespace Zadatak1.Services
 {
     public class UserService : IUserService
     {
-        private readonly IRepository<User> _userRepository;
+        private readonly IUserRepository _userRepository;
 
-        public UserService(IRepository<User> userRepository)
+        public UserService(IUserRepository userRepository)
         {
             _userRepository = userRepository;
         }
 
-        public async Task<User> GetForEdit(Guid id)
+        public async Task<User> GetById(Guid id)
         {
             return await _userRepository.GetById(id);
         }
 
-        public async Task<bool> Update(Guid id, UserEditViewModel model)
+        public async Task<string> Update(Guid id, UserEditViewModel model)
         {
-            var user = await _userRepository.GetById(id);
-            if (user == null) return false;
+            var success = await _userRepository.Update(id, model);
+            if (!success)
+                return "User not found or update failed.";
 
-            user.UserName = model.Username;
-            user.FirstName = model.FirstName;
-            user.LastName = model.LastName;
-            user.Gender = model.Gender;
-            user.Email = model.Email;
-            user.Role = model.Purpose;
-            user.LoginPermission = model.Flag;
-
-            _userRepository.Update(user);
-            await _userRepository.SaveChanges();
-            return true;
+            return "User successfully updated.";
         }
 
         public async Task<IEnumerable<User>> GetAll()
@@ -41,14 +33,13 @@ namespace Zadatak1.Services
             return await _userRepository.GetAll();
         }
 
-        public async Task<bool> Delete(Guid id)
+        public async Task<string> Delete(Guid id)
         {
-            var user = await _userRepository.GetById(id);
-            if (user == null) return false;
+            var success = await _userRepository.Delete(id);
+            if (!success)
+                return "User not found or delete failed.";
 
-            _userRepository.Delete(user);
-            await _userRepository.SaveChanges();
-            return true;
+            return "User deleted successfully.";
         }
     }
 }

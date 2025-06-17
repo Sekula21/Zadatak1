@@ -15,7 +15,7 @@ namespace Zadatak1.Services
             _userManager = userManager;
         }
 
-        public async Task<(bool Success, IEnumerable<string> Errors)> Registration(RegisterViewModel model)
+        public async Task<(bool Success, IEnumerable<string> Errors)> Register(RegisterViewModel model)
         {
             var user = new User
             {

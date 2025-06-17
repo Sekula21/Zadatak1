@@ -10,22 +10,22 @@ namespace Zadatak1.Controllers
     public class TransactionController : Controller
     {
         private readonly ITransactionService _transactionService;
-        private readonly ExceptionHandlerService _exceptionHandler;
+        private readonly ExceptionHandler _exceptionHandler;
 
         public TransactionController(ITransactionService transactionService,
-            ExceptionHandlerService exceptionHandlerService)
+            ExceptionHandler exceptionHandler)
         {
             _transactionService = transactionService;
-            _exceptionHandler = exceptionHandlerService;
+            _exceptionHandler = exceptionHandler;
         }
 
         public async Task<IActionResult> Transaction()
         {
-            return View(await _transactionService.GetAllTransactions());
+            return View(await _transactionService.GetAll());
         }
         public async Task<IActionResult> PreviousTrans()
         {
-            return View(await _transactionService.GetAllTransactions());
+            return View(await _transactionService.GetAll());
         }
 
         [Authorize]
