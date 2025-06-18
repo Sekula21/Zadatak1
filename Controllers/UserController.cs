@@ -7,31 +7,32 @@ using Zadatak1.ViewModels;
 
 namespace Zadatak1.Controllers
 {
-    public class UsersController : Controller
+    public class UsersController : BaseController
     {
         private readonly IUserService _userService;
 
-        public UsersController(IUserService userService)
+        public UsersController(IUserService userService, ExceptionHandler exceptionHandler):base(exceptionHandler)
         {
             _userService = userService;
         }
 
         public async Task<IActionResult> Dashboard()
         {
-            var users = await _userService.GetAll();
+            var users = await TryExecute(() => _userService.GetAll());
             return View(users);
         }
 
         public async Task<IActionResult> Products()
         {
-            return View(await _userService.GetAll());
+            var users = await TryExecute(() => _userService.GetAll());
+            return View(users);
         }
 
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null) return NotFound();
 
-            var user = await _userService.GetById(id.Value);
+            var user = await TryExecute(() => _userService.GetById(id.Value));
             if (user == null) return NotFound();
 
             return View(user);
@@ -45,7 +46,7 @@ namespace Zadatak1.Controllers
 
             if (!ModelState.IsValid) return View(model);
 
-            var success = await _userService.Update(id, model);
+            var success = await TryExecute(() => _userService.Update(id, model));
             if (success == null) return NotFound();
 
             return RedirectToAction("Dashboard", "Admin");
@@ -55,7 +56,7 @@ namespace Zadatak1.Controllers
         {
             if (id == null) return NotFound();
 
-            var users = await _userService.GetAll();
+            var users = await TryExecute(() => _userService.GetAll());
             if (users == null) return NotFound();
 
             return View(users);
@@ -65,7 +66,7 @@ namespace Zadatak1.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            await _userService.Delete(id);
+            await TryExecute(() => _userService.Delete(id));
             return RedirectToAction("Dashboard", "Admin");
         }
 

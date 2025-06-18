@@ -7,22 +7,23 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Zadatak1.Interfaces;
 using Zadatak1.Models;
+using Zadatak1.Services;
 using Zadatak1.ViewModels;
 
 namespace Zadatak1.Controllers
 {
-    public class ProductController : Controller
+    public class ProductController : BaseController
     {
         private readonly IProductService _productService;
 
-        public ProductController(IProductService productService)
+        public ProductController(IProductService productService, ExceptionHandler exceptionHandler):base(exceptionHandler)
         {
             _productService = productService;
         }
 
         public async Task<IActionResult> Products()
         {
-            var product = await _productService.GetAll();
+            var product = await TryExecute(() => _productService.GetAll());
             return View(product);
         }
 
@@ -34,7 +35,7 @@ namespace Zadatak1.Controllers
                 return NotFound();
             }
 
-            var product = await _productService.GetById(id.Value);
+            var product = await TryExecute(() => _productService.GetById(id.Value));
             if (product == null)
             {
                 return NotFound();
@@ -54,7 +55,7 @@ namespace Zadatak1.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _productService.Create(model);
+                await TryExecute(() => _productService.Create(model));
                 return RedirectToAction(nameof(Products));
             }
             return View(model);
@@ -65,8 +66,8 @@ namespace Zadatak1.Controllers
         {
             if (id == null) return NotFound();
 
-            var product = await _productService.GetById(id);
-            if (product == null) return NotFound();
+            var (success, product) = await TryExecuteWithResult(() => _productService.GetById(id));
+            if (!success || product == null) return NotFound();
 
             var model = new Product
             {
@@ -91,8 +92,8 @@ namespace Zadatak1.Controllers
 
             if (ModelState.IsValid)
             {
-                var updated = await _productService.Update(id, model);
-                if (!updated) return NotFound();
+                var updated = await TryExecute(() => _productService.Update(id, model));
+                if (updated == null) return NotFound();
 
                 return RedirectToAction(nameof(Products));
             }
@@ -104,7 +105,7 @@ namespace Zadatak1.Controllers
         {
             if (id == null) return NotFound();
 
-            var product = await _productService.GetById(id.Value);
+            var product = await TryExecute(() => _productService.GetById(id.Value));
             if (product == null) return NotFound();
 
             return View(product);
@@ -114,14 +115,15 @@ namespace Zadatak1.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var deleted = await _productService.Delete(id);
-            if (!deleted) return NotFound();
+            var deleted = await TryExecute(() => _productService.Delete(id));
+            if (deleted == null) return NotFound();
 
             return RedirectToAction(nameof(Products));
         }
         private async Task<bool> ProductExists(Guid id)
         {
-            return await _productService.Any(p => p.Id == id);
+            var (success, exist) = await TryExecuteWithResult(() => _productService.Any(p => p.Id == id));
+            return exist;
         }
 
 
@@ -141,7 +143,7 @@ namespace Zadatak1.Controllers
                 SortOrder = sortOrder
             };
 
-            var result = await _productService.ApplyFilters(filterModel);
+            var result = await TryExecute(() => _productService.ApplyFilters(filterModel));
             return View(result);
         }
     }
