@@ -7,52 +7,35 @@ using Zadatak1.Services;
 
 namespace Zadatak1.Controllers
 {
-    public class TransactionController : Controller
+    public class TransactionController : BaseController
     {
         private readonly ITransactionService _transactionService;
-        private readonly ExceptionHandler _exceptionHandler;
 
         public TransactionController(ITransactionService transactionService,
-            ExceptionHandler exceptionHandler)
+            ExceptionHandler exceptionHandler):base(exceptionHandler)
         {
             _transactionService = transactionService;
-            _exceptionHandler = exceptionHandler;
         }
 
         public async Task<IActionResult> Transaction()
         {
-            return View(await _transactionService.GetAll());
+            var(success, view) = await TryExecuteWithResult(() => _transactionService.GetAll());
+            return View(view);
         }
         public async Task<IActionResult> PreviousTrans()
         {
-            return View(await _transactionService.GetAll());
+            var (success, view) = await TryExecuteWithResult(() => _transactionService.GetAll());
+            return View(view);
         }
 
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> Transaction(Guid Name, int amount)
         {
-            try
-            {
-                var result = await _transactionService.ProcessTransaction(Name, amount);
+            var result = await TryExecute(() => _transactionService.ProcessTransaction(Name, amount));
 
-                return Ok(new
-                {
-                    ResultStatus = ActionResultStatus.Success,
-                    Data = result
-                });
-            }
-            catch (Exception ex)
-            {
-                var handledResult = _exceptionHandler.HandleException<string>(ex);
-                return handledResult.ResultStatus switch
-                {
-                    ActionResultStatus.BadRequest => BadRequest(handledResult),
-                    ActionResultStatus.Unauthorized => Unauthorized(handledResult),
-                    ActionResultStatus.NotFound => NotFound(handledResult),
-                    _ => StatusCode(500, handledResult)
-                };
-            }
+            return Ok(result);
+         
         }
     }
 }
