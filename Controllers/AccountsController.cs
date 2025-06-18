@@ -4,16 +4,18 @@ using Zadatak1.Models;
 using Zadatak1.ViewModels;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using Zadatak1.Interfaces;
+using Zadatak1.Services;
 
 namespace Zadatak1.Controllers
 {
-    public class AccountsController : Controller
+    public class AccountsController : BaseController
     {
         private readonly IResponseMessageService _responseMessageService;
         private readonly ILoginService _loginService;
         private readonly IRegistrationService _registrationService;
 
-        public AccountsController(ILoginService loginService, IRegistrationService registerService, IResponseMessageService responseMessageService)
+        public AccountsController(ILoginService loginService, IRegistrationService registerService,
+            IResponseMessageService responseMessageService, ExceptionHandler exceptionHandler):base(exceptionHandler)
         {
             _loginService = loginService;
             _registrationService = registerService;
