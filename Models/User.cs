@@ -11,7 +11,7 @@ namespace Zadatak1.Models
         public string LastName { get; set; }
         public string Gender { get; set; }
         public DateTime BirthDate { get; set; }
-        public bool Role { get; set; }
+        public bool UserRole { get; set; }
         public bool LoginPermission { get; set; }
     }
 }

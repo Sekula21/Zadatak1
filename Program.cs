@@ -20,6 +20,7 @@ builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IUserTokenService, UserTokenService>();
 builder.Services.AddScoped<IResponseMessageService, ResponseMessageService>();
+builder.Services.AddScoped<ExceptionHandler>(); 
 
 builder.Services.AddScoped<TokenProvider>();
 builder.Services.AddHttpContextAccessor();
@@ -28,6 +29,8 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+
+builder.Services.AddScoped<MySeeder>();
 
 
 
@@ -54,6 +57,14 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
+
+    using (var scope = app.Services.CreateScope())
+    {
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+
+        var seeder = new MySeeder(); 
+        await seeder.SeedUser(userManager);
+    }
 }
 
 app.UseHttpsRedirection();
