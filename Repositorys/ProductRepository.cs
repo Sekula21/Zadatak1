@@ -64,8 +64,6 @@ namespace Zadatak1.Repositorys
         public async Task<bool> Delete(Guid id)
         {
             var product = await _context.Products.FindAsync(id);
-            if (product == null) return false;
-
             _context.Products.Remove(product);
             await _context.SaveChangesAsync();
             return true;

@@ -23,7 +23,7 @@ namespace Zadatak1.Repositorys
             user.Email = model.Email;
             user.UserName = model.Username;
             user.Gender = model.Gender;
-            user.Role = model.Role;
+            user.UserRole = model.Role;
             user.LoginPermission = model.LoginPermission;
 
             _context.Users.Update(user);

@@ -25,7 +25,7 @@ namespace Zadatak1.Services
                 Gender = model.Gender,
                 Email = model.Email,
                 BirthDate = model.BirthDate,
-                Role = false,
+                UserRole = false,
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);

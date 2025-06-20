@@ -15,16 +15,13 @@ namespace Zadatak1.Services
         private readonly ITransactionRepository _transactionRepository;
         private readonly IUserTokenService _userTokenService;
         private readonly IResponseMessageService _responseMessageService;
-        private readonly ExceptionHandler _exceptionHandler;
-
         public TransactionService(IUserRepository userRepository, IProductRepository productRepository, IUserTokenService userTokenService, 
-            IResponseMessageService responseMessageService, ExceptionHandler exceptionHandler, ITransactionRepository transactionRepository)
+            IResponseMessageService responseMessageService, ITransactionRepository transactionRepository)
         {
             _userRepository = userRepository;
             _productRepository = productRepository;
             _userTokenService = userTokenService;
             _responseMessageService = responseMessageService;
-            _exceptionHandler = exceptionHandler;
             _transactionRepository = transactionRepository;
         }
         public async Task<IEnumerable<Transaction>> GetAll()
@@ -33,60 +30,40 @@ namespace Zadatak1.Services
         }
         public async Task<ActionResult<string>> ProcessTransaction(Guid productId, int amount)
         {
-            try
+            var userId = _userTokenService.GetCurrentUserId();
+
+            var dbUser = await _userRepository.GetById((Guid)userId);
+            var product = await _productRepository.GetById(productId);
+            var notFoundMsg = _responseMessageService.Get("Errors", "UPNotFound");
+            var notEnoughStockMsg = _responseMessageService.Get("Errors", "NotEnoughStock");
+
+            if (dbUser == null || product == null)
             {
-                var userId = _userTokenService.GetCurrentUserId();
-
-                var dbUser = await _userRepository.GetById((Guid)userId);
-                var product = await _productRepository.GetById(productId);
-                var notFoundMsg = _responseMessageService.Get("Errors", "UPNotFound");
-                var notEnoughStockMsg = _responseMessageService.Get("Errors", "NotEnoughStock");
-
-                if (dbUser == null || product == null)
-                {
-                    return new ActionResult<string>
-                    {
-                        ResultStatus = ActionResultStatus.NotFound,
-                        ErrorMessage = notFoundMsg
-                    };
-                }
-
-                if (product.Amount < amount)
-                {
-                    return new ActionResult<string>
-                    {
-                        ResultStatus = ActionResultStatus.BadRequest,
-                        ErrorMessage = notEnoughStockMsg
-                    };
-                }
-
-                var transaction = new Transaction
-                {
-                    Buyer = dbUser,
-                    Product = product,
-                    TransactionDate = DateTime.Now,
-                    Amount = amount,
-                    Price = product.Price * amount
-                };
-
-                product.Amount -= amount;
-                await _transactionRepository.Add(transaction);
-                _productRepository.Update(product);
-                await _transactionRepository.SaveChanges();
-
-                var successMsg = _responseMessageService.Get("Success", "Purchase");
-
                 return new ActionResult<string>
                 {
-                    ResultStatus = ActionResultStatus.Success,
-                    Data = successMsg
+                    ResultStatus = ActionResultStatus.NotFound,
+                    ErrorMessage = notFoundMsg
                 };
+            }
 
-            }
-            catch (Exception ex)
+            if (product.Amount < amount)
             {
-                return _exceptionHandler.HandleException<string>(ex, "TransactionFailed");
+                return new ActionResult<string>
+                {
+                    ResultStatus = ActionResultStatus.BadRequest,
+                    ErrorMessage = notEnoughStockMsg
+                };
             }
+
+            await _transactionRepository.CreateTransaction(dbUser, product, amount);
+
+            var successMsg = _responseMessageService.Get("Success", "Purchase");
+
+            return new ActionResult<string>
+            {
+                ResultStatus = ActionResultStatus.Success,
+                Data = successMsg
+            };
         }
     }
 }
